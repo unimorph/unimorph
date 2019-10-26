@@ -14,7 +14,9 @@ import subprocess
 import sys
 from typing import List
 
-__version__ = "0.0.1"
+import pandas as pd
+
+__version__ = "0.0.2"
 
 USERHOME = pathlib.Path.home()
 UNIMORPH_DIR_ = os.environ.get("UNIMORPH", USERHOME / ".unimorph")
@@ -51,14 +53,16 @@ def is_empty(dir: pathlib.Path) -> bool:
     return list(dir.iterdir()) == []
 
 
-def download_unimorph(lang: str, specific_file=None):
-    if specific_file is None:
-        specific_file = lang
+def not_loaded(lang: str) -> bool:
+    output_dir = UNIMORPH_DIR / lang
+    return (not output_dir.exists()) or is_empty(output_dir)
 
+
+def download_unimorph(lang: str):
     output_dir = UNIMORPH_DIR / lang
     output_dir.mkdir(exist_ok=True, parents=True)
 
-    if (not output_dir.exists()) or is_empty(output_dir):
+    if not_loaded(lang):
         logging.info(f"Downloading unimorph/{lang} to {output_dir}")
         subprocess.run(
             ["git", "clone", f"https://github.com/unimorph/{lang}.git"],
@@ -66,6 +70,33 @@ def download_unimorph(lang: str, specific_file=None):
             cwd=UNIMORPH_DIR,
         )
     assert output_dir.is_dir()
+
+
+def load_dataset(lang: str, specific_file=None):
+    if specific_file is None:
+        specific_file = lang
+
+    download_unimorph(lang)
+
+    language_path = UNIMORPH_DIR / lang / specific_file
+    data = pd.read_csv(
+        language_path, header=None, sep="\t", names=["lemma", "form", "features"]
+    )
+    return data
+
+
+def inflect_word(word: str, *, lang: str, features=None):
+    data = load_dataset(lang)
+    if features is None:
+        result = data[data.lemma == word]
+    else:
+        result = data[(data.lemma == word) & (data.features == features)]
+    return result.to_csv(sep="\t", index=False, header=None)
+
+
+def analyze_word(word: str, *, lang: str):
+    data = load_dataset(lang)
+    return data[data.form == word].to_csv(sep="\t", index=False, header=None)
 
 
 def get_list_of_datasets() -> List[str]:
@@ -95,6 +126,8 @@ def parse_args():
         "mode", choices={"download", "list", "citation", "inflect", "analyze"}
     )
     parser.add_argument("--language", "-l", help="language (3-letter ISO 639-3 code)")
+    parser.add_argument("--word", type=str)
+    parser.add_argument("--features", type=str)
 
     parser.add_argument(
         "--quiet",
@@ -135,9 +168,11 @@ def main() -> None:
         print(CITATION)
         sys.exit(0)
     elif args.mode == "inflect":
-        print("Not implemented yet...", file=sys.stderr)
+        print(
+            inflect_word(args.word, lang=args.language, features=args.features), end=""
+        )
     elif args.mode == "analyze":
-        print("Not implemented yet...", file=sys.stderr)
+        print(analyze_word(args.word, lang=args.language), end="")
     else:
         raise ValueError(f"Unknown mode {args.mode}")
 

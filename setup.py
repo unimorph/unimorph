@@ -55,6 +55,7 @@ setup(
         "NLP, natural language processing, evaluation, computational linguistics, morphology"
     ],
     py_modules=["unimorph"],
+    install_requires=["pandas"],
     extras_require={},
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
