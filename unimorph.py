@@ -14,7 +14,7 @@ import subprocess
 import sys
 from typing import List
 
-__version__ = "2.1"
+__version__ = "0.0.1"
 
 USERHOME = pathlib.Path.home()
 UNIMORPH_DIR_ = os.environ.get("UNIMORPH", USERHOME / ".unimorph")
@@ -91,7 +91,9 @@ def parse_args():
         __doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    parser.add_argument("mode", choices={"download", "list", "citation", "analyze"})
+    parser.add_argument(
+        "mode", choices={"download", "list", "citation", "inflect", "analyze"}
+    )
     parser.add_argument("--language", "-l", help="language (3-letter ISO 639-3 code)")
 
     parser.add_argument(
@@ -132,6 +134,10 @@ def main() -> None:
     elif args.mode == "citation":
         print(CITATION)
         sys.exit(0)
+    elif args.mode == "inflect":
+        print("Not implemented yet...", file=sys.stderr)
+    elif args.mode == "analyze":
+        print("Not implemented yet...", file=sys.stderr)
     else:
         raise ValueError(f"Unknown mode {args.mode}")
 
