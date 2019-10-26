@@ -14,7 +14,7 @@ import subprocess
 import sys
 from typing import List
 
-__version__ = "3.0"
+__version__ = "2.1"
 
 USERHOME = pathlib.Path.home()
 UNIMORPH_DIR_ = os.environ.get("UNIMORPH", USERHOME / ".unimorph")
