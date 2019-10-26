@@ -16,7 +16,7 @@ from typing import List
 
 import pandas as pd
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 USERHOME = pathlib.Path.home()
 UNIMORPH_DIR_ = os.environ.get("UNIMORPH", USERHOME / ".unimorph")
@@ -109,7 +109,6 @@ def get_list_of_datasets() -> List[str]:
           grep -o 'git@github.com:unimorph/[a-z]\{3\}.git' |
           cut -c25-27
         """
-    print(command)
 
     data = subprocess.run(
         command, shell=True, check=True, capture_output=True, encoding="utf-8"
@@ -126,7 +125,7 @@ def parse_args():
         "mode", choices={"download", "list", "citation", "inflect", "analyze"}
     )
     parser.add_argument("--language", "-l", help="language (3-letter ISO 639-3 code)")
-    parser.add_argument("--word", type=str)
+    parser.add_argument("--word", "-w", type=str)
     parser.add_argument("--features", type=str)
 
     parser.add_argument(

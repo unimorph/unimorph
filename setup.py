@@ -5,6 +5,9 @@ from setuptools import setup
 import pathlib
 import re
 
+_THIS_DIR = pathlib.Path(__file__).resolve().parent
+_LONG_DESCRIPTION = (_THIS_DIR / "README.md").read_text()
+
 
 def get_version() -> str:
     VERSION_REGEX = re.compile(r"""__version__\s+=\s+['"]([0-9.]+)['"]""")
@@ -19,16 +22,8 @@ setup(
     name="unimorph",
     version=get_version(),
     description="Annotated morphology in the world's languages",
-    long_description="""
-    The Universal Morphology (UniMorph) project is a collaborative 
-    effort to improve how NLP handles complex morphology in the world’s 
-    languages. The goal of UniMorph is to annotate morphological data
-    in a universal schema that allows an inflected word from any 
-    language to be defined by its lexical meaning, typically carried 
-    by the lemma, and by a rendering of its inflectional form in terms 
-    of a bundle of morphological features from our schema. The 
-    specification of the schema is described in Sylak-Glassman (2016).
-    """,
+    long_description=_LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     url="https://unimorph.github.io/",
     author="Arya D. McCarthy",
     author_email="arya@jhu.edu",
@@ -52,7 +47,11 @@ setup(
     ],
     # What does your project relate to?
     keywords=[
-        "NLP, natural language processing, evaluation, computational linguistics, morphology"
+        "NLP",
+        "natural language processing",
+        "evaluation",
+        "computational linguistics",
+        "morphology",
     ],
     py_modules=["unimorph"],
     install_requires=["pandas"],
